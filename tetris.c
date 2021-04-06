@@ -7,6 +7,9 @@ questions or advice? contact me: ethanberg95@gmail.com
 #include <termios.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <ctype.h>
+
+#include "tetris.h"
 
 struct termios stdterm; // save standard terminal flags for resetTerm on exit
 
@@ -77,6 +80,7 @@ int main() {
 }
 
 
+// TODO: create arrays to represent blocks
 // TODO: Set up the tetris board
 // TODO: create a block falling system
 // TODO: configure keybindings and algorithms to rotate tetris blocks
