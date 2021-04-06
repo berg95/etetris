@@ -1,9 +1,14 @@
+/*
+Etetris - Simple tetris clone 
+questions or advice? contact me: ethanberg95@gmail.com
+*/
+
 #include <stdio.h>
 #include <termios.h>
 #include <unistd.h>
 #include <stdlib.h>
 
-struct termios stdterm;
+struct termios stdterm; // save standard terminal flags for resetTerm on exit
 
 enum KEY_ACTION{
         KEY_NULL = 0,       /* NULL */
@@ -32,29 +37,52 @@ enum KEY_ACTION{
         PAGE_DOWN
 };
 
+// reset the terminal back to standard canonical mode
 void resetTerm(int fd) {
     tcsetattr(fd,TCSAFLUSH,&stdterm);
 }
 
-void disableRawMode(void) {
-    resetTerm(STDIN_FILENO);
+// had to make this function because of trouble with atexit()
+void disableRawMode() {
+  resetTerm(STDIN_FILENO);
 }
 
+// setting up the terminal for proper reading of input
 void enableRawMode(int fd) {
-    struct termios newterm;
-    newterm = stdterm;
-    atexit(disableRawMode);
 
+    tcgetattr(STDIN_FILENO, &stdterm);
+    atexit(disableRawMode);
+    
+    struct termios newterm = stdterm;
     newterm.c_lflag &= ~(ECHO | ICANON | ISIG);
 
     tcsetattr(fd,TCSAFLUSH,&newterm);
 }
 
+/*----------------------------------------------|
+| Main function is not yet started develeopment |
+| it is setup like this for debugging purposes  |
+|----------------------------------------------*/
 int main() {
     enableRawMode(STDIN_FILENO);
 
     char c;
-    while (read(STDIN_FILENO, &c, 1) == 1);
-
-    printf("%d\n", c);
+    while (read(STDIN_FILENO, &c, 1) == 1 && c != 'q') {
+      if (iscntrl(c)) {
+	printf("%d\n", c);
+      } else {
+	printf("%d ('%c')\n", c, c);
+      }
+    }
 }
+
+
+// TODO: Set up the tetris board
+// TODO: create a block falling system
+// TODO: configure keybindings and algorithms to rotate tetris blocks
+// TODO: make user input reading run concurrently with the block falling system
+// TODO: make a help menu
+// TODO: set up point system and tetris row removal
+// TODO: make losing the game possible
+// TODO: Hiscores
+// TODO: documentation and info in readme.md
