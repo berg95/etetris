@@ -1,6 +1,6 @@
 /*
 Etetris - Simple tetris clone 
-questions or advice? contact me: ethanberg95@gmail.com
+questions or advice contact me: ethanberg95@gmail.com
 */
 
 #include <stdio.h>
@@ -12,6 +12,7 @@ questions or advice? contact me: ethanberg95@gmail.com
 #include "tetris.h"
 
 struct termios stdterm; // save standard terminal flags for resetTerm on exit
+int gameRun = 1;		// always stay as 1 if game is to continue running
 
 enum KEY_ACTION{
         KEY_NULL = 0,       /* NULL */
@@ -68,20 +69,34 @@ void enableRawMode(int fd) {
 |----------------------------------------------*/
 int main() {
     enableRawMode(STDIN_FILENO);
+	int entrypoint = gameBoard[5];	// default block the tetris pieces will fall into
 
     char c;
-    while (read(STDIN_FILENO, &c, 1) == 1 && c != 'q') {
-      if (iscntrl(c)) {
-	printf("%d\n", c);
-      } else {
-	printf("%d ('%c')\n", c, c);
-      }
+    while (gameRun == 1) {
+		read(STDIN_FILENO, &c, 1);
+      	
+		// to manage input
+		switch(c){
+			case 'q':
+				printf("Quitting\n");
+				gameRun = 0;	// stops the loop and returns to terminal
+				break;
+			
+			case 'p':
+				printf("You pressed p\n");
+				break;
+		}
+		/*if (iscntrl(c)) {
+			printf("%d\n", c);
+      	} else {
+			printf("%d ('%c')\n", c, c);
+      }*/
     }
 }
 
 
 // TODO: create arrays to represent blocks
-// TODO: Set up the tetris board
+
 // TODO: create a block falling system
 // TODO: configure keybindings and algorithms to rotate tetris blocks
 // TODO: make user input reading run concurrently with the block falling system
